@@ -1,22 +1,115 @@
+:root {
+  --dark-grey: #222222;
+  --medium-grey: #636363;
+  --light-grey: #e2e2e2;
+  --red: #bb3535;
+}
+
 .App {
   text-align: center;
+  background-color: var(--dark-grey);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  font-size: 12pt;
+  color: var(--light-grey);
 }
 
-.App-logo {
-  height: 40vmin;
+.grid-container {
+  display: grid;
+  grid-template-areas:
+    'top-left top-center top-right'
+    'middle-left middle-center middle-right'
+    'bottom-left bottom-center bottom-right';
+  grid-template-rows: repeat(3, minmax(max-content, 2fr));
+  grid-template-columns: repeat(3, minmax(max-content, 2fr));
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.top-left { grid-area: top-left; }
+.top-center { grid-area: top-center; }
+.top-right { grid-area: top-right; }
+.middle-left { grid-area: middle-left; }
+.middle-center { grid-area: middle-center; }
+.middle-right { grid-area: middle-right; }
+.bottom-left { grid-area: bottom-left; }
+.bottom-center { grid-area: bottom-center; }
+.bottom-right { grid-area: bottom-right; }
+
+.flex {
+  display: flex;
+}
+
+.column-flex {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #09d3ac;
+/* Clock */
+.clock {
+  padding: 32px;
+}
+
+.clock-date {
+  font-size: 4em;
+}
+
+.clock-time {
+  font-size: 7em;
+}
+
+/* Weather */
+.weather {
+  padding: 16px;
+}
+
+.weather-current {
+  display: flex;
+  justify-content: space-around;
+  font-size: 2em
+}
+
+.weather-current-conditions {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  padding-right: 24px;
+}
+
+.weather-current-temp {
+  font-size: 3em;
+  padding-left: 16px;
+}
+
+.weather-current-extra {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: baseline;
+  padding-left: 24px;
+}
+
+.weather-alert {
+  text-transform: capitalize;
+  color: var(--red);
+}
+
+.weather-daily {
+  display: flex;
+  font-size: 1em;
+  justify-content: space-around;
+}
+
+.weather-small-day {
+  padding-bottom: 8px;
+}
+
+.weather-small-temp {
+  padding: 0 4px;
+}
+
+.weather-hourly {
+  margin-top: -24px;
+  padding-bottom: 28px;
 }
