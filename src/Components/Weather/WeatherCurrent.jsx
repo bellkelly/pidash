@@ -17,8 +17,7 @@ const WeatherCurrent = props => {
     },
   } = props;
 
-  const region = 'City of Toronto';
-  const warning = !isEmpty(alert) && alert.regions.includes(region) && (
+  const warning = !isEmpty(alert) && (
     <div className='weather-alert'>
       {alert.severity}: {alert.title}
     </div>

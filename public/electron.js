@@ -3,9 +3,12 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const ipcMain = electron.ipcMain;
 
+const axios = require('axios');
 const path = require('path');
 const url = require('url');
 const isDev = require('electron-is-dev');
+
+require('dotenv').config()
 
 let mainWindow;
 
@@ -37,7 +40,8 @@ app.on('activate', () => {
 
 /* Interprocess Communication */
 
-ipcMain.on('asynchronous-message', (event, arg) => {
-  console.log(arg) // prints "ping"
-  event.reply('asynchronous-reply', 'pong')
-})
+ipcMain.handle('weatherUpdate', async (event) => {
+  return await axios.get(
+    `https://api.darksky.net/forecast/${process.env.ELECTRON_DARKSKY_API}/${process.env.ELECTRON_DARKSKY_LOCATION}?units=auto`
+  )
+});

@@ -1,88 +1,61 @@
-import { get } from 'axios';
 import { slice, isEmpty } from 'lodash';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
 import WeatherCurrent from './WeatherCurrent';
 import WeatherDaily from './WeatherDaily';
 import WeatherHourlyGraph from './WeatherHourlyGraph';
 
-class Weather extends Component {
-  constructor(props) {
-    super(props);
+const electron = window.require('electron');
 
-    this.state = {
-      isLoading: true,
-      isError: false,
-      alerts: [],
-      currently: {},
-      hourly: {},
-      daily: {},
-    };
+const Weather = (props) => {
+  const { className } = props;
 
-    this.getCurrentWeather = this.getCurrentWeather.bind(this);
-  }
+  const [isLoading, setLoading] = useState(true);
+  const [isError, setError] = useState(true);
+  const [alert, setAlert] = useState({})
+  const [currently, setCurrently] = useState({})
+  const [hourly, setHourly] = useState({})
+  const [daily, setDaily] = useState({})
 
-  componentDidMount() {
-    this.getCurrentWeather();
+  useEffect(() => {
+    const invokeWeatherUpdate = () => {
+      electron.ipcRenderer.invoke('weatherUpdate')
+      .then((weather) => {
+        if (!isEmpty(weather.data.alerts)) {
+          setAlert(weather.data.alerts[0])
+        }
 
-    this.timer = setInterval(this.getCurrentWeather, 1000 * 60 * 3);
-  }
+        setCurrently(weather.data.currently);
+        setHourly(weather.data.hourly);
+        setDaily(weather.data.daily);
 
-  componentWillUnmount() {
-    clearInterval(this.timer);
-  }
+        setLoading(false);
+        setError(false);
+      })
+    .catch((error) => {
+        setError(true);
+      })
+    }
 
-  getCurrentWeather() {
-    // get('weather/43.653225,-79.383186/?units=si')
-    //   .then(res => {
-    //     const { currently, daily, hourly } = res.data;
+    const interval = setInterval(invokeWeatherUpdate, 1000 * 60 * 3);
+    invokeWeatherUpdate()
+    return () => clearInterval(interval);
+  }, []);
 
-    //     this.setState({
-    //       currently,
-    //       hourly,
-    //       daily,
-    //       isError: false,
-    //       isLoading: false,
-    //     });
-    //   })
-    //   .catch(err => {
-    //     console.error(err);
-    //     this.setState({ isError: true });
-    //   });
-    const electron = window.require('electron');
-    electron.ipcRenderer.on('asynchronous-reply', (event, arg) => {
-      console.log(arg) // prints "pong"
-    })
-    electron.ipcRenderer.send('asynchronous-message', 'ping')
-  }
-
-
-  render() {
-    const { className } = this.props;
-    const { alerts, currently, daily, hourly, isError, isLoading } = this.state;
-
-    const alert = (!isEmpty(alerts) && alerts[0]) || {};
-
-    return (
-      (!isLoading && !isError && (
-        <div className={classNames(className, 'weather')}>
-          <WeatherCurrent alert={alert} currently={currently} />
-          <WeatherHourlyGraph hourly={slice(hourly.data, 0, 9)} />
-          <WeatherDaily days={slice(daily.data, 1, 8)} />
-        </div>
-      )) || <div className={classNames(className, 'weather')} />
-    );
-  }
+  return (
+    (!isLoading && !isError && (
+      <div className={classNames(className, 'weather')}>
+        <WeatherCurrent alert={alert} currently={currently} />
+        <WeatherHourlyGraph hourly={slice(hourly.data, 1, 10)} />
+        <WeatherDaily days={slice(daily.data, 1, 8)} />
+      </div>
+    )) || <div className={classNames(className, 'weather')} />
+  );
 }
 
 export default Weather;
 
 Weather.defaultProps = {
   className: 'bottom-center',
-};
-
-Weather.propTypes = {
-  className: PropTypes.string,
 };
