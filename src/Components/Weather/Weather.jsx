@@ -35,23 +35,29 @@ class Weather extends Component {
   }
 
   getCurrentWeather() {
-    get('weather/43.653225,-79.383186/?units=si')
-      .then(res => {
-        const { currently, daily, hourly } = res.data;
+    // get('weather/43.653225,-79.383186/?units=si')
+    //   .then(res => {
+    //     const { currently, daily, hourly } = res.data;
 
-        this.setState({
-          currently,
-          hourly,
-          daily,
-          isError: false,
-          isLoading: false,
-        });
-      })
-      .catch(err => {
-        console.error(err);
-        this.setState({ isError: true });
-      });
+    //     this.setState({
+    //       currently,
+    //       hourly,
+    //       daily,
+    //       isError: false,
+    //       isLoading: false,
+    //     });
+    //   })
+    //   .catch(err => {
+    //     console.error(err);
+    //     this.setState({ isError: true });
+    //   });
+    const electron = window.require('electron');
+    electron.ipcRenderer.on('asynchronous-reply', (event, arg) => {
+      console.log(arg) // prints "pong"
+    })
+    electron.ipcRenderer.send('asynchronous-message', 'ping')
   }
+
 
   render() {
     const { className } = this.props;
