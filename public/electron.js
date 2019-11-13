@@ -5,21 +5,21 @@ const ipcMain = electron.ipcMain;
 
 const axios = require('axios');
 const path = require('path');
-const url = require('url');
 const isDev = require('electron-is-dev');
 
-require('dotenv').config()
+require('dotenv').config();
 
 let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 900, 
-    height: 680,
+    fullscreen: true, 
+    autoHideMenuBar: true, 
+    alwaysOnTop: true,  
     webPreferences: {
       nodeIntegration: true
-    }
-  });
+  }});
+
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
   mainWindow.on('closed', () => mainWindow = null);
 }
@@ -38,10 +38,14 @@ app.on('activate', () => {
   }
 });
 
-/* Interprocess Communication */
-
-ipcMain.handle('weatherUpdate', async (event) => {
-  return await axios.get(
+ipcMain.on('weather-request', (event, arg) => {
+  axios.get(
     `https://api.darksky.net/forecast/${process.env.ELECTRON_DARKSKY_API}/${process.env.ELECTRON_DARKSKY_LOCATION}?units=auto`
   )
-});
+  .then(resp => {
+      event.reply('weather-response', resp.data)
+  })
+  .catch(err => {
+      event.reply('weather-response', {'error': err});
+  });
+})

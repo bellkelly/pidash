@@ -1,14 +1,21 @@
 import classNames from 'classnames';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 function Clock(props) {
   const [time, setTime] = useState(moment());
   const { className } = props;
 
-  // Refresh time every 15 seconds
-  setInterval(() => setTime(moment()), 1000 * 15);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(moment());
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <div className={classNames(className, 'clock')}>
