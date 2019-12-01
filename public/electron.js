@@ -4,12 +4,18 @@ const BrowserWindow = electron.BrowserWindow;
 const ipcMain = electron.ipcMain;
 
 const axios = require('axios');
+var fs = require("fs");
 const path = require('path');
 const isDev = require('electron-is-dev');
 
 require('dotenv').config();
 
 let mainWindow;
+let sampleData = {};
+
+if (isDev) {
+  sampleData = require("./sample_data.json"); 
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -39,6 +45,11 @@ app.on('activate', () => {
 });
 
 ipcMain.on('weather-request', (event, arg) => {
+  // Prevent excessive API calls when developing locally.
+  if (isDev) {
+    return event.reply('weather-response', sampleData);
+  }
+
   axios.get(
     `https://api.darksky.net/forecast/${process.env.ELECTRON_DARKSKY_API}/${process.env.ELECTRON_DARKSKY_LOCATION}?units=auto`
   )
