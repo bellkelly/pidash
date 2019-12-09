@@ -1,16 +1,18 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PureComponent } from 'react';
 
 import WeatherSVG from './WeatherSVG';
 
-const WeatherDot = props => {
-  const {
-    cx,
-    cy,
-    payload: { icon },
-  } = props;
+class WeatherDot extends PureComponent {
+  render() {
+    const {
+      cx,
+      cy,
+      payload: { icon },
+    } = this.props;
 
-  return <WeatherSVG icon={icon} x={cx - 14} y={cy - 30} />;
+    return <WeatherSVG icon={icon} x={cx - 14} y={cy - 30} />;
+  }
 };
 
 export default WeatherDot;

@@ -1,14 +1,16 @@
 import { round } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PureComponent }  from 'react';
 
-const TemperatureLabel = props => {
-  const { value, ...rest } = props;
-  return (
-    <text dy={-35} fill='var(--light-grey)' textAnchor='middle' {...rest}>
-      {round(value)}&deg;C
-    </text>
-  );
+class TemperatureLabel extends PureComponent {
+  render() {
+    const { value, ...rest } = this.props;
+    return (
+      <text dy={-35} fill='var(--light-grey)' textAnchor='middle' {...rest}>
+        {round(value)}&deg;C
+      </text>
+    );
+  }
 };
 
 export default TemperatureLabel;
